@@ -1,0 +1,385 @@
+from IPython.display import HTML, display
+
+HTML("""
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Delius&family=Pacifico&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #fce4ec 0%, #e3f2fd 100%);
+    background-attachment: fixed;
+    color: #5d4037;
+    font-family: 'Quicksand', sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* EFECTO DE CORAZONES FLOTANTES CONSTANTES */
+.heart {
+    position: fixed;
+    color: #ff8e91;
+    font-size: 20px;
+    animation: heartFloat 5s linear infinite;
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes heartFloat {
+    0% { transform: translateY(100vh) scale(0) rotate(0deg); opacity: 0; }
+    20% { opacity: 0.8; transform: translateY(80vh) scale(1.2); }
+    100% { transform: translateY(-10vh) scale(0.8) rotate(360deg); opacity: 0; }
+}
+
+/* PANTALLA DE CONTRASEÑA */
+#login {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    transition: all 0.6s ease-in-out;
+}
+
+.login-box {
+    width: 100%;
+    max-width: 420px;
+    padding: 50px 30px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 3px solid #ffccd5;
+    border-radius: 40px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 15px 40px rgba(255, 182, 193, 0.5);
+}
+
+.login-gif {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 20px;
+    border-radius: 50%;
+    border: 3px solid #ffb6c1;
+    object-fit: cover;
+}
+
+.login-box h1 {
+    font-family: 'Delius', cursive;
+    font-size: 28px;
+    color: #ff6b8b;
+    margin-bottom: 15px;
+}
+
+.login-box p {
+    font-size: 16px;
+    color: #795548;
+    margin-bottom: 30px;
+}
+
+input {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #ffe3e8;
+    outline: none;
+    border-radius: 30px;
+    background: #fff;
+    color: #4a3b42;
+    text-align: center;
+    font-size: 18px;
+    letter-spacing: 5px;
+}
+
+button {
+    margin-top: 25px;
+    padding: 14px 40px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ff6b8b, #ff8e91);
+    color: white;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 17px;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(255, 107, 139, 0.4);
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(255, 107, 139, 0.6);
+}
+
+#error {
+    color: #e04d70;
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 700;
+    display: none;
+}
+
+/* INTERFAZ INTERACTIVA */
+#app {
+    display: none;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.story-container {
+    width: 100%;
+    max-width: 650px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 4px solid #ffccd5;
+    border-radius: 40px;
+    padding: 40px 30px;
+    box-shadow: 0 20px 50px rgba(255, 182, 193, 0.3);
+    text-align: center;
+}
+
+.story-step {
+    display: none;
+    animation: fadeInStep 0.8s ease-in-out forwards;
+}
+
+.story-step.active {
+    display: block;
+}
+
+@keyframes fadeInStep {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.step-title {
+    font-family: 'Pacifico', cursive;
+    font-size: 34px;
+    color: #ff6b8b;
+    margin-bottom: 20px;
+}
+
+.illustration-frame {
+    display: inline-block;
+    padding: 6px;
+    background: white;
+    border: 3px solid #ffe3e8;
+    border-radius: 50%;
+    margin-bottom: 25px;
+    box-shadow: 0 8px 20px rgba(255, 182, 193, 0.3);
+}
+
+.illustration-img {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
+.story-text {
+    font-family: 'Delius', cursive;
+    font-size: 19px;
+    line-height: 1.6;
+    color: #5d4037;
+    margin-bottom: 30px;
+    padding: 0 10px;
+}
+
+.story-text span {
+    color: #ff6b8b;
+    font-weight: bold;
+}
+
+.music-box {
+    background: #ffeef2;
+    border: 1px dashed #ffccd5;
+    border-radius: 25px;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+}
+
+.music-info h4 {
+    font-size: 17px;
+    color: #5d4037;
+}
+
+.music-info p {
+    font-size: 14px;
+    color: #9c8c94;
+}
+
+.play-btn {
+    margin-top: 0;
+    padding: 10px 20px;
+    font-size: 14px;
+    background: #ff6b8b;
+}
+
+.next-btn {
+    background: linear-gradient(135deg, #5dade2, #3498db);
+    box-shadow: 0 5px 15px rgba(93, 173, 226, 0.4);
+}
+.next-btn:hover {
+    box-shadow: 0 8px 20px rgba(93, 173, 226, 0.6);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="hearts-bg"></div>
+
+<!-- LOGEO -->
+<section id="login">
+    <div class="login-box">
+        <img class="login-gif" src="https://i.pinimg.com/originals/bb/46/13/bb46134b45dd26e32df53c4070972c86.jpg" alt="Luffy">
+        <h1>Inserta la contraseña,<br>ojitos 😉</h1>
+        <p>Hay algo especial esperándote ahí dentro... 🙈</p>
+        <input type="password" id="password" placeholder="••••••">
+        <br>
+        <button onclick="unlock()">DESBLOQUEAR 🙉🌹</button>
+        <div id="error">La contraseña no es correcta 😿💔</div>
+    </div>
+</section>
+
+<!-- CONTENIDO PRINCIPAL -->
+<section id="app">
+    <div class="story-container">
+
+        <!-- PASO 1: Inicio -->
+        <div class="story-step active" id="step-1">
+            <div class="step-title">¡Hola, ojitos! </div>
+            <div class="illustration-frame">
+                <img class="illustration-img" src="https://media.craiyon.com/2025-05-18/CSaWktPoSDmpYOi-Vqquig.webp" alt="Stitch y Snoopy">
+            </div>
+            <p class="story-text">
+                Preparé este espacio especialmente para ti, Lisbeth <span>chica de los ojitos hermosos 🌹</span>. Quería recordarte lo increíble que eres a través de estas palabras... Dale clic abajo. 👇✨
+            </p>
+            <button class="next-btn" onclick="nextStep(2)">Empezar 🙈🌸</button>
+        </div>
+
+        <!-- PASO 2: El Poema / Mensaje Largo -->
+        <div class="story-step" id="step-2">
+            <div class="step-title">FELIZ CUNPLEAÑOS OJITOS🌷✨</div>
+            <div class="illustration-frame">
+                <img class="illustration-img" src="https://i.pinimg.com/236x/26/ed/d3/26edd3e89ea4f417e51b471aedfa5b34.jpg" alt="Snoopy">
+            </div>
+            <p class="story-text" style="font-size: 17px; line-height: 1.7; text-align: left; padding: 0 20px;">
+                Hay personas que llegan a la vida sin avisar,<br>
+                y con su sola presencia la empiezan a iluminar.<br>
+                Hasta las mismas estrellas se ponen celosas de tu brillo ✨<br>
+                Tú eres de esas almas que inspiran confianza y paz,<br>
+                una chica trabajadora que siempre quiere superarse ☺️.<br><br>
+                Tu risa, tu forma de escuchar, tu manera de hablar,<br>
+                todo te hace especial, una chica con un bonito corazon 💓.<br><br>
+                Te mereces todo lo bonito del mundo,<br>
+                Espero verte sonreir siempre, y si no es asi,<br>
+                entonces yo seré el motivo de esas sonrisas 😉.<br><br>
+                <span>¡Feliz cumpleaños, Lisbeth! Querida Ojitos🌹🌟</span>
+            </p>
+            <button class="next-btn" onclick="nextStep(3)">Siguiente 🎶</button>
+        </div>
+
+        <!-- PASO 3: Misael Soul – Bonita Así -->
+        <div class="story-step" id="step-2">
+            <div class="step-title">Eres una chica que se merece lo mejor del mundo ✨</div>
+            <div class="illustration-frame">
+                <img class="illustration-img" src="https://i.pinimg.com/236x/26/ed/d3/26edd3e89ea4f417e51b471aedfa5b34.jpg" alt="Snoopy">
+            </div>
+            <p class="story-text">
+                Cuando veo esos ojos, el mundo tiene otro color🌷. Siento que la vida se llena de una alegría cada vez que sonries 😉. Asi que te dedico esta canción 👇
+            </p>
+            <div class="music-box">
+                <div class="music-info">
+                    <h4>Bonita Así</h4>
+                    <p>Misael Soul🎶</p>
+                </div>
+                <button class="play-btn" onclick="playSong('https://open.spotify.com/intl-es/album/4fs9dCO8nVqXXgrpRZ2hSD')">▶ Escuchar</button>
+            </div>
+            <button class="next-btn" onclick="nextStep(3)"> 🌹</button>
+        </div>
+
+            <button onclick="restartStory()">Volver al inicio 🔄🌺🌻</button>
+        </div>
+
+    </div>
+</section>
+
+<script>
+function unlock() {
+    const password = document.getElementById("password").value;
+
+    if (password === "230825") {
+        const loginSection = document.getElementById("login");
+        const appSection = document.getElementById("app");
+
+        loginSection.style.opacity = "0";
+        loginSection.style.transform = "scale(0.95)";
+
+        setTimeout(() => {
+            loginSection.style.display = "none";
+            appSection.style.display = "flex";
+            createHearts();
+        }, 600);
+
+    } else {
+        const errorDiv = document.getElementById("error");
+        errorDiv.style.display = "block";
+    }
+}
+
+function nextStep(stepNumber) {
+    const steps = document.querySelectorAll('.story-step');
+    steps.forEach(step => step.classList.remove('active'));
+
+    const nextStepEl = document.getElementById('step-' + stepNumber);
+    if(nextStepEl) {
+        nextStepEl.classList.add('active');
+    }
+}
+
+function restartStory() {
+    nextStep(1);
+}
+
+function playSong(url) {
+    window.open(url, "_blank");
+}
+
+function createHearts() {
+    setInterval(() => {
+        const heart = document.createElement("div");
+        heart.className = "heart";
+
+        const models = ["🌹", "🌺", "🌷", "🌸", "🌻"];
+        heart.innerHTML = models[Math.floor(Math.random() * models.length)];
+
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.animationDuration = (3 + Math.random() * 3) + "s";
+
+        document.getElementById("hearts-bg").appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 5000);
+    }, 500);
+}
+</script>
+
+</body>
+</html>
+""")
